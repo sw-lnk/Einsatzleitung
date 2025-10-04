@@ -1,0 +1,26 @@
+# Python-generated files
+__pycache__/
+.python-version
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv
+
+# UV
+uv.lock
+
+# NiceGUI
+.nicegui
+
+# Logging
+log
+
+# dotenv
+.env
+
+# Database
+database.db
