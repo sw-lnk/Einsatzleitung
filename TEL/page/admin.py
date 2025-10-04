@@ -122,7 +122,7 @@ def admin_page() -> None:
         if not check_input_validation(new_pwd):
             return
         
-        user_db = user.get_user_by_id(int(input_id.value))        
+        user_db = user._get_user_by_id(int(input_id.value))        
         user_db.name = input_name.value
         user_db.username = input_username.value
         user_db.email = input_email.value
