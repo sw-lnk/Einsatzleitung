@@ -1,5 +1,6 @@
 import traceback
 from nicegui import ui, app
+from fastapi import status
 from fastapi.exceptions import HTTPException
 
 from TEL.page import theme
@@ -18,11 +19,14 @@ def exception_message(message: str, icon: str = 'error') -> None:
 @app.on_page_exception
 def exception_page(exception: Exception) -> None:
     if isinstance(exception, HTTPException):
-        if exception.status_code == 401:
+        if exception.status_code == status.HTTP_401_UNAUTHORIZED:
             ui.navigate.to('/login')
             return
-        if exception.status_code == 403:
-            exception_message('Fehlende Berechtigung', 'lock')
+        elif exception.status_code == status.HTTP_403_FORBIDDEN:
+            exception_message('Fehlende Berechtigung', 'o_lock')
+            return
+        elif exception.status_code == status.HTTP_404_NOT_FOUND:
+            exception_message('Nicht verfügbar', 'o_help_center')
             return
     
     with theme.frame(''):

@@ -90,6 +90,12 @@ def refresh_token(token: str) -> None:
         app.storage.user.update({'token': new_token})
 
 
+def hash_permission(permission: str) -> str:
+    return pwd_context.hash(permission)
+
+def verify_permission(plain_permission: str, hashed_permisiion: str) -> bool:
+    return pwd_context.verify(plain_permission, hashed_permisiion)
+
 # =============================================================================
 # AUTHENTICATION MIDDLEWARE
 # =============================================================================

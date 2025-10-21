@@ -1,7 +1,7 @@
 from datetime import timedelta
 from nicegui import ui, app
 
-from TEL.authentication import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES
+from TEL.authentication import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, hash_permission
 
 async def login_page() -> None:
     async def login() -> None:
@@ -10,7 +10,8 @@ async def login_page() -> None:
             ui.notify('Login successfull', type='positive')
             token = create_access_token(data={'sub': user.username}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
             data = {
-                'token': token
+                'token': token,
+                'permission': hash_permission(user.permission)
             }
             app.storage.user.update(data)
             ui.navigate.to('/')
@@ -20,5 +21,5 @@ async def login_page() -> None:
     with ui.card().classes('absolute-center'):
         username = ui.input('Benutzername').on('keydown.enter', login).classes('w-full')
         password = ui.input('Passwort', password=True, password_toggle_button=True).on('keydown.enter', login).classes('w-full')
-        ui.button('Log in', on_click=login).classes('w-full')
+        ui.button('Log in', on_click=login, icon='login').classes('w-full')
     return None

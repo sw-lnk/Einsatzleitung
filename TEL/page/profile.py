@@ -1,7 +1,7 @@
 from nicegui import ui, app
 
 from TEL.authentication import get_current_user, authenticate_user, get_password_hash
-from TEL.page.admin import validate_password
+from TEL.page.admin_user import validate_password
 from TEL.database.user import _get_user_by_id, update_user_data
 
 async def logout():
@@ -38,8 +38,8 @@ async def profile_page() -> None:
             input_pwd0 = ui.input('Aktuelles Passwort', password=True, password_toggle_button=True).classes('w-full')
             input_pwd1 = ui.input('Passwort', password=True, password_toggle_button=True, validation=validate_password).classes('w-full')
             input_pwd2 = ui.input('Passwort Abgleich', password=True, validation={'Passwörter stimmen nicht überein.': lambda value: value == input_pwd1.value}).classes('w-full')
-            input_button = ui.button('Speichern', on_click=change_password).classes('w-full')
-            ui.button('Abbrechen', on_click=pwd_change_dialog.close).classes('w-full')
+            input_button = ui.button('Speichern', on_click=change_password, icon='save').classes('w-full')
+            ui.button('Abbrechen', on_click=pwd_change_dialog.close, icon='cancel').classes('w-full')
             
             input_pwd1.on_value_change(input_pwd2.validate)
             input_pwd2.on_value_change(input_pwd1.validate)
@@ -62,7 +62,7 @@ async def profile_page() -> None:
     
     with ui.row().classes('w-full justify-center'):
         with ui.column():
-            ui.button('Passwort ändern', on_click=change_password_dialog)
+            ui.button('Passwort ändern', on_click=change_password_dialog, icon='o_change_circle')
         with ui.column():
-            ui.button('Logout', on_click=logout)
+            ui.button('Logout', on_click=logout, icon='logout')
             

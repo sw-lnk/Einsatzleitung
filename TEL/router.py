@@ -19,11 +19,11 @@ async def login_page():
     with theme.frame('Login'):
         await login.login_page()
 
-@ui.page('/admin')
+@ui.page('/admin/user')
 @require_auth(Permission.admin)
 async def admin_page():
     with theme.frame(''):
-        admin.admin_page()
+        admin_user.admin_user_page()
 
 @ui.page('/profil')
 @require_auth(None)

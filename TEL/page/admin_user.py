@@ -2,7 +2,7 @@ from string import punctuation, digits, ascii_lowercase, ascii_uppercase
 from nicegui import ui
 
 from TEL.database import admin, user
-from TEL.model.user import User, UserInfo, Permission
+from TEL.model import User, UserInfo, Permission
 from TEL.authentication import get_password_hash
 
 from TEL.page.card import card        
@@ -45,7 +45,7 @@ def validate_email(email:str) -> bool:
 
 
 @ui.refreshable
-def admin_page() -> None:
+def admin_user_page() -> None:
     
     def clear_input():
         input_id.set_value('')
@@ -86,7 +86,7 @@ def admin_page() -> None:
             
             if new_user:
                 all_user.append(UserInfo.model_validate(new_user))
-                admin_page.refresh()
+                admin_user_page.refresh()
             
             clear_input()
                 
@@ -141,7 +141,7 @@ def admin_page() -> None:
         
         clear_input()
         user_dialog.close()
-        admin_page.refresh()
+        admin_user_page.refresh()
         
         
     def check_input_validation(check_password: bool = True):
@@ -175,7 +175,7 @@ def admin_page() -> None:
             input_pwd1 = ui.input('Password', password=True, password_toggle_button=True, validation=validate_password).classes('w-full')
             input_pwd2 = ui.input('Password Validation', password=True, validation={'Passwörter stimmen nicht überein.': lambda value: value == input_pwd1.value}).classes('w-full')
             input_permission = ui.select([None, Permission.read, Permission.write, Permission.admin], label='Permission').classes('w-full')
-            input_button = ui.button('Anlegen').classes('w-full')
+            input_button = ui.button('Anlegen', icon='save').classes('w-full')
             
             input_pwd1.on_value_change(input_pwd2.validate)
             
@@ -201,6 +201,6 @@ def admin_page() -> None:
             )
         
         with ui.column():
-            ui.button('Neuer Nutzer', on_click=new_user).classes('w-full')
-            edit_user_button = ui.button('Nutzer bearbeiten', on_click=edit_user).classes('w-full')
+            ui.button('Neuer Nutzer', on_click=new_user, icon='add_box').classes('w-full')
+            edit_user_button = ui.button('Nutzer bearbeiten', on_click=edit_user, icon='edit').classes('w-full')
             edit_user_button.bind_enabled_from(user_table, 'selected', lambda selected: len(selected)>0)
