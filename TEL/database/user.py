@@ -19,10 +19,17 @@ def _get_user_by_id(user_id: int) -> User:
         return session.exec(select(User).where(User.id == user_id)).first()
 
 def get_user_by_username(username: str) -> UserInfo | None:
-    return UserInfo.model_validate(_get_user_by_username(username))
+    user = _get_user_by_username(username)
+    if user:
+        return UserInfo.model_validate(user)
+    return None
 
 def get_user_by_id(user_id: int) -> UserInfo:    
-    return UserInfo.model_validate(_get_user_by_id(user_id))
+    user = _get_user_by_id(user_id)
+    if user:
+        return UserInfo.model_validate(user)
+    return None
+
 
 async def update_user_data(user: User) -> User:
     return await create_user(user)

@@ -27,7 +27,8 @@ async def mission_new_page():
         return True
         
     async def safe_mission() -> None:
-        check_mission_input()
+        if not check_mission_input():
+            return
         
         mission = Mission(
             label = input_mission_label.value,

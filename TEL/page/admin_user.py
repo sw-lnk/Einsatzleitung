@@ -163,6 +163,7 @@ def admin_user_page() -> None:
             if input_pwd2.error or (len(input_pwd2.value) < 1):
                 ui.notify(input_pwd2.error, type='warning')
                 return False
+            
         return True
     
     with ui.dialog() as user_dialog:
