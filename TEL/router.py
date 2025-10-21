@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from TEL.page import login, index, theme, profile, dashboard, admin
 from TEL.page import exception  # noqa: F401 # Ignore to use exeption pages
 from TEL.authentication import require_auth
-from TEL.model.user import Permission
+from TEL.model import Permission
 
 router = APIRouter(tags=['Pages'])
 

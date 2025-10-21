@@ -1,50 +1,131 @@
 '''
 Generate Demo Data
 '''
-from sqlmodel import Session
+from sqlmodel import select
 
-from TEL.database.database import engine, create_db_and_tables
-from TEL.model.user import User, Permission
+from TEL.database.database import get_session, create_db_and_tables
+
+from TEL import model
 from TEL.authentication import get_password_hash
 
-def create_demo_user() -> None:
+def create_demo_user() -> model.UserInfo:
+    print('Create Demo User...')
     password = get_password_hash('Password.1234')
-    admin = User(
+    admin = model.User(
         username='admin',
         hashed_password=password,
         name='Demo Admin Permission',
         email='admin@example.com',
-        permission=Permission.admin,
+        permission=model.Permission.admin,
     )
-    write = User(
+    write = model.User(
         username='write',
         hashed_password=password,
         name='Demo Write Permission',
         email='write@example.com',
-        permission=Permission.write,
+        permission=model.Permission.write,
     )
-    read = User(
+    read = model.User(
         username='read',
         hashed_password=password,
         name='Demo Read Permission',
         email='read@example.com',
-        permission=Permission.read,
+        permission=model.Permission.read,
     )    
-    user = User(
+    user = model.User(
         username='user',
         hashed_password=password,
         name='Demo No Permission',
         email='user@example.com',
     )
     
-    with Session(engine) as session:
+    with get_session() as session:
         session.add(admin)
         session.add(write)
         session.add(read)
         session.add(user)
         session.commit()
-        
+        session.refresh(admin)
+    
+    return model.UserInfo.model_validate(admin)
+
+missions = [
+    model.Mission(
+        label='123456789',
+        street='Muster Straße',
+        street_no='1',
+        zip_code='12345',
+        status=model.Status.new,
+        category=model.Category.th
+    ),
+    model.Mission(
+        label='223456789',
+        street='Weg des Musters',
+        street_no='7a',
+        zip_code='12345',
+        status=model.Status.in_progress,
+        category=model.Category.fire
+    ),
+    model.Mission(
+        label='323456789',
+        street='Großestraße',
+        street_no='112',
+        zip_code='12345',
+        status=model.Status.closed,
+        category=model.Category.th
+    ),
+    model.Mission(
+        label='423456789',
+        street='Muster Weg / Muster Straße',
+        zip_code='12345',
+        status=model.Status.archived,
+        category=model.Category.cbrn
+    ),
+]
+
+messages = [
+    'Einheit Musterhaus dem Einsatz zugeordnet.',
+    'Erste Rückmeldung von der Est: Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum',
+    'Folgemeldung: Lage unter Kontrolle, Einsatzdauer unbekannt.',
+    'Folgemeldung: Maßnahmen werden zurückgenommen, Einsatzstelle an Eigentümer übergeben.',
+    'Abschlussmeldung: Rücken ein.',
+]
+
+def create_demo_mission() -> None:    
+    print('Create Demo Missions...')
+    with get_session() as session:
+        for idx, m in enumerate(missions):
+            session.add(m)
+            session.add(model.Message(
+                content='Mission created.',
+                prio=model.Priority.low,
+                mission_id=idx+1,
+                user_name='Automatisch generiert'
+            ))
+            session.commit()
+            session.refresh(m)
+
+def create_demo_messages(user: model.UserInfo):
+    print('Create Demo Messages...')
+    with get_session() as session:
+        for mis in session.exec(select(model.Mission)).all():
+            for msg in messages:
+                session.add(
+                    model.Message(
+                        content=msg,
+                        user_name=user.name,
+                        user_id=user.id,
+                        mission_id=mis.id,
+                    ),
+                )
+        session.commit()
 
 if __name__ in {"__main__", "__mp_main__"}:
+    print('### Demo Data Creation ###')
+    
     create_db_and_tables()
-    create_demo_user()
+    admin = create_demo_user()
+    create_demo_mission()
+    create_demo_messages(admin)
+    
+    print('### Ready for Testing ###')

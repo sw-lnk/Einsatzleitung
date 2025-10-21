@@ -1,7 +1,7 @@
 from sqlmodel import select
 
 from TEL.database import database
-from TEL.model.user import User, UserInfo
+from TEL.model import User, UserInfo
 
 async def create_user(user: User) -> UserInfo | None:
     with database.get_session() as session:

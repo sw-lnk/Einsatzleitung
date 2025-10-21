@@ -10,7 +10,7 @@ from fastapi.exceptions import HTTPException
 from nicegui import app
 
 import TEL.database.user as db_user
-from TEL.model.user import UserInfo, Permission
+from TEL.model import UserInfo, Permission
 
 load_dotenv()
 

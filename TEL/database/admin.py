@@ -1,7 +1,7 @@
 from sqlmodel import Session, select
 
 from TEL.database import database
-from TEL.model.user import User, UserInfo
+from TEL.model import User, UserInfo
 
 def get_all_user() -> list[UserInfo]:
     with Session(database.engine) as session:

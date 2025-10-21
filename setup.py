@@ -1,7 +1,7 @@
 from getpass import getpass
 from sqlmodel import select
 
-from TEL.model.user import User, Permission
+from TEL.model import User, Permission
 from TEL.database.database import get_session, create_db_and_tables
 from TEL.authentication import get_password_hash
 
