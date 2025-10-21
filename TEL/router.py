@@ -1,7 +1,7 @@
 from nicegui import ui
 from fastapi import APIRouter
 
-from TEL.page import login, index, theme, profile, dashboard, admin
+from TEL.page import admin_user, login, index, theme, profile, dashboard, mission_overview, mission_new, mission_detail
 from TEL.page import exception  # noqa: F401 # Ignore to use exeption pages
 from TEL.authentication import require_auth
 from TEL.model import Permission
@@ -36,3 +36,27 @@ async def profile_page():
 async def dashboard_page():
     with theme.frame('Dashboard'):
         dashboard.dashboard_page()
+
+@ui.page('/mission')
+@require_auth(Permission.read)
+async def mission_overview_page():
+    with theme.frame('Einsatzübersicht'):
+        mission_overview.mission_overview_page()
+
+@ui.page('/mission/new')
+@require_auth(Permission.write)
+async def mission_new_page():
+    with theme.frame(''):
+        await mission_new.mission_new_page()
+
+@ui.page('/mission/{mission_id}')
+@require_auth(Permission.read)
+async def mission_detail_page(mission_id: int):
+    with theme.frame('Einsatzdetails'):
+        await mission_detail.mission_detail_page(int(mission_id))
+
+@ui.page('/admin/mission')
+@require_auth(Permission.admin)
+async def mission_admin_page():
+    with theme.frame('Einsatzübersicht'):
+        mission_overview.mission_overview_page(False)

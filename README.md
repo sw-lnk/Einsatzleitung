@@ -25,12 +25,12 @@ Weitere Infos zum Deployment siehe [NiceGUI](https://nicegui.io/documentation/se
 ## ToDo's
 - [X] User Interface
 - [X] Nutzer-Management
-- [ ] Einsatztagebuch
-    - [ ] Gesamteinsatz
+- [X] Einsatztagebuch
+    - [X] Gesamteinsatz
     - [ ] Einsatzabschnitte
 - [ ] Vierfachnachrichtenvordruck
 - [ ] Kräfteübersicht
-- [ ] Einsatzübersicht
+- [X] Einsatzübersicht
 
 ## Referenz
 * [NiceGUI](https://nicegui.io/)
