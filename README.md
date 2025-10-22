@@ -1,3 +1,7 @@
+<p align="center">
+    <img src="/TEL/data/logo_TEL.png" alt="Loog TEL" width="48">
+</p>
+
 # Technische Einsatzleitung
 Digitale Unterstützung in der Technische Einsatzleitung (TEL).
 
