@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="/TEL/data/logo_TEL.png" alt="Loog TEL" width="48">
+    <img src="/TEL/data/logo_TEL.png" alt="Loog TEL" width="192">
 </p>
 
 # Technische Einsatzleitung

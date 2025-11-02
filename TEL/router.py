@@ -10,14 +10,14 @@ router = APIRouter(tags=['Pages'])
 
 # --- Landing Page ---
 @ui.page('/', api_router=router)
+@require_auth(Permission.read)
 async def index_page():
     with theme.frame(''):
         index.index_page()
 
 @ui.page('/login', api_router=router)
 async def login_page():
-    with theme.frame('Login'):
-        await login.login_page()
+    await login.login_page()
 
 @ui.page('/admin/user')
 @require_auth(Permission.admin)
