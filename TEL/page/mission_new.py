@@ -6,6 +6,7 @@ from TEL.database.mission import get_mission_by_label, create_mission
 from TEL.database.message import create_message
 from TEL.authentication import get_current_user
 from TEL.page.mission_detail import validate_input, messages
+from TEL.page.dashboard import dashboard_page
 
 PLZ = os.getenv('ZIP_CODE')
 
@@ -52,6 +53,7 @@ async def mission_new_page():
         await create_message(new_message)
         messages.insert(0, new_message)
         
+        dashboard_page.refresh()
         ui.notify('Speichern erfolgreich', type='positive')
         ui.navigate.to(f'/mission/{mission.id}')
     

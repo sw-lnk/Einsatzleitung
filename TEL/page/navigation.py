@@ -10,7 +10,7 @@ def link(text: str, target: str) -> None:
 def navigation() -> None:
     # link('Admin - User', '/admin/user')
     # link('Admin - Einsatz', '/admin/mission')
-    # link('Dashboard', '/dashboard')
+    link('Dashboard', '/dashboard')
     link('Einsätze', '/mission')
     link('Einheiten', '/units')
     link('Profil', '/profil')

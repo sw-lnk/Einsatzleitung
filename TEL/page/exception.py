@@ -10,10 +10,9 @@ from TEL.page import theme
 # =============================================================================
 
 def exception_message(message: str, icon: str = 'error') -> None:
-    with theme.frame(''):
-        with ui.column().classes('absolute-center items-center gap-8'):
-            ui.icon(icon, size='xl')
-            ui.label(message).classes('text-2xl')
+    with ui.column().classes('absolute-center items-center gap-8'):
+        ui.icon(icon, size='xl')
+        ui.label(message).classes('text-2xl')
             
 
 @app.on_page_exception
@@ -29,8 +28,7 @@ def exception_page(exception: Exception) -> None:
             exception_message('Nicht verfügbar', 'o_help_center')
             return
     
-    with theme.frame(''):
-        with ui.column().classes('absolute-center items-center gap-8'):
-            ui.icon('error', size='xl')
-            ui.label(f'{exception}').classes('text-2xl')
-            ui.code(traceback.format_exc(chain=False))
+    with ui.column().classes('absolute-center items-center gap-8'):
+        ui.icon('error', size='xl')
+        ui.label(f'{exception}').classes('text-2xl')
+        ui.code(traceback.format_exc(chain=False))

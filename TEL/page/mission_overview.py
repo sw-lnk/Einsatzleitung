@@ -1,6 +1,7 @@
 from nicegui import ui, app       
 
 from TEL.page.card import card
+from TEL.page.dashboard import dashboard_page
 from TEL.database.mission import get_all_mission, get_mission_by_id, archiv_mission, reactivate_mission
 from TEL.model import Status, Permission
 from TEL.authentication import verify_permission
@@ -38,11 +39,13 @@ def mission_overview_page(archived: bool = True) -> None:
             await archiv_mission(mission_id)
             archiv_dialog.close()
             mission_overview_page.refresh()
+            dashboard_page.refresh()
             
         async def clicked_reactivate_mission():        
             await reactivate_mission(mission_id)
             archiv_dialog.close()
             mission_overview_page.refresh()
+            dashboard_page.refresh()
         
         mission_id = mission_table.selected[0]['id']
         mission = get_mission_by_id(mission_id)
@@ -65,13 +68,13 @@ def mission_overview_page(archived: bool = True) -> None:
         with ui.row().classes('w-full justify-center'):
             with ui.row():
                 with ui.column():
-                    card(str(len(all_missions)), 'Einsätze gesamt', icon='o_info')
-                with ui.column():
                     card(str(len([m for m in all_missions if m.status == Status.new])), 'Einsatz Neu', icon='o_control_point')
                 with ui.column():
                     card(str(len([m for m in all_missions if m.status == Status.in_progress])), 'Einsatz In Arbeit', icon='o_change_circle')
                 with ui.column():
-                    card(str(len([m for m in all_missions if m.status == Status.new])), 'Einsatz Abgeschlossen', icon='o_flag_circle')
+                    card(str(len([m for m in all_missions if m.status == Status.closed])), 'Einsatz Abgeschlossen', icon='o_flag_circle')
+                with ui.column():
+                    card(str(len(all_missions)), 'Einsätze gesamt', icon='o_info')
 
         
         with ui.row().classes('w-full justify-center'):

@@ -6,6 +6,7 @@ from TEL.model import Mission, Message, Category, Status, Priority
 from TEL.database.message import get_all_messages, create_message
 from TEL.database.mission import get_mission_by_id, get_mission_by_label, update_mission_data
 from TEL.authentication import get_current_user, verify_permission
+from TEL.page.dashboard import dashboard_page
 
 messages: list[Message] = get_all_messages()
 
@@ -167,6 +168,7 @@ async def mission_detail_page(mission_id: int):
         mission_change_dialog.close()
         mission_details.refresh()
         mission_messages.refresh()
+        dashboard_page.refresh()
     
     user = await get_current_user(app.storage.user.get('token'))
     

@@ -3,6 +3,7 @@ from nicegui import ui
 from TEL.model import UNIT_STATUS, Unit
 from TEL.database.unit import get_all_units, get_unit, quit_unit_status, update_unit
 from TEL.database.mission import get_mission_by_id, get_all_mission
+from TEL.page.dashboard import dashboard_page
 
 STATUS_COLOR = {
     0: 'bg-red-500 text-white',
@@ -26,6 +27,7 @@ def unit_stuff(unit: Unit):
         unit.ms = stuff_ms.value
         unit.agt = stuff_agt.value
         await update_unit(unit)
+        dashboard_page.refresh()
     
     with ui.row(align_items='center').classes('w-full justify-center'):
         with ui.card():

@@ -1,7 +1,9 @@
 from nicegui import ui
 from fastapi import APIRouter
 
-from TEL.page import admin_user, login, index, theme, profile, dashboard, mission_overview, mission_new, mission_detail
+from TEL.page import admin_user, login, index, theme, profile
+from TEL.page import dashboard, mission_overview, mission_new, mission_detail
+from TEL.page import unit_overview, unit_status
 from TEL.page import exception  # noqa: F401 # Ignore to use exeption pages
 from TEL.authentication import require_auth
 from TEL.model import Permission
@@ -14,6 +16,12 @@ router = APIRouter(tags=['Pages'])
 async def index_page():
     with theme.frame(''):
         index.index_page()
+        
+@ui.page('/dashboard')
+@require_auth(Permission.read)
+async def dashboard_page():
+    with theme.frame('Dashboard'):
+        dashboard.dashboard_page()
 
 @ui.page('/login', api_router=router)
 async def login_page():
@@ -30,12 +38,6 @@ async def admin_page():
 async def profile_page():
     with theme.frame('Nutzerprofil'):
         await profile.profile_page()
-
-@ui.page('/dashboard')
-@require_auth(Permission.read)
-async def dashboard_page():
-    with theme.frame('Dashboard'):
-        dashboard.dashboard_page()
 
 @ui.page('/mission')
 @require_auth(Permission.read)
