@@ -1,7 +1,7 @@
 from sqlmodel import select
 
 from TEL.database import database
-from TEL.model import Mission, Status
+from TEL.model import Mission, Status, Unit
 
 async def create_mission(mission: Mission) -> Mission | None:
     with database.get_session() as session:
@@ -25,6 +25,11 @@ def get_mission_by_id(mission_id: int) -> Mission | None:
     with database.get_session() as session:
         return session.exec(select(Mission).where(Mission.id == mission_id)).first()
 
+def get_mission_units(mission_id: int) -> list[Unit] | None:
+    with database.get_session() as session:
+        mission = session.exec(select(Mission).where(Mission.id == mission_id)).first()
+        return mission.units
+    
 async def update_mission_data(mission: Mission) -> Mission:
     return await create_mission(mission)
 

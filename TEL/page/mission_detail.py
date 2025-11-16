@@ -4,11 +4,48 @@ from fastapi.exceptions import HTTPException
 
 from TEL.model import Mission, Message, Category, Status, Priority
 from TEL.database.message import get_all_messages, create_message
-from TEL.database.mission import get_mission_by_id, get_mission_by_label, update_mission_data
+from TEL.database.mission import get_mission_by_id, get_mission_by_label, update_mission_data, get_mission_units
 from TEL.authentication import get_current_user, verify_permission
 from TEL.page.dashboard import dashboard_page
+from TEL.page.utils import STATUS_COLOR
 
 messages: list[Message] = get_all_messages()
+
+@ui.refreshable
+def mission_units(mission_id: int, input_ui: ui.input):
+    units = get_mission_units(mission_id)
+    unit_strength = {
+        'vf': sum([unit.vf for unit in units]),
+        'zf': sum([unit.zf for unit in units]),
+        'gf': sum([unit.gf for unit in units]),
+        'ms': sum([unit.ms for unit in units]),
+        'agt': sum([unit.agt for unit in units]),
+    }
+    unit_strength['total'] = sum([unit_strength.get('vf'), unit_strength.get('zf'), unit_strength.get('gf'), unit_strength.get('ms')])
+    if units is None:
+        ui.label('Keine Einheit zugeordnet.')
+        return
+    with ui.card(align_items='center').classes('w-full'):
+        with ui.row(align_items='center').classes('w-full justify-center'):
+            ui.label(unit_strength.get('vf'))
+            ui.label('/')
+            ui.label(unit_strength.get('zf'))
+            ui.label('/')
+            ui.label(unit_strength.get('gf'))
+            ui.label('/')
+            ui.label(unit_strength.get('ms'))
+            ui.label('/')
+            ui.label(unit_strength.get('total')).classes('underline')
+            ui.label(f'[ {unit_strength.get('ms')} ]')
+            
+        for status in [0, 5, 3, 4, 1, 2, 7, 8, 9, 6]:
+            for unit in units:
+                if unit.status == status:
+                    with ui.row(align_items='center').classes('w-full'):
+                        ui.label(unit.status).classes(f'text-lg {STATUS_COLOR[unit.status]} rounded-lg py-1 px-3')
+                        ui.button(text=unit.label).classes('w-48').props('align=left').on_click(
+                            lambda label=unit.label: input_ui.set_value(f'{label}: ')
+                        )
 
 @ui.refreshable
 def mission_details(mission_id: int):
@@ -172,6 +209,24 @@ async def mission_detail_page(mission_id: int):
     
     user = await get_current_user(app.storage.user.get('token'))
     
+    with ui.footer().classes('border-t-2 bg-white'), ui.row(align_items='center').classes('w-full justify-center mx-5'):
+            prio = ui.select(
+                [Priority.low, Priority.medium, Priority.high, Priority.top],
+                label='Priorität',
+                value=Priority.medium).classes('w-1/12')
+            
+            text = ui.input(
+                placeholder='Meldung',
+                validation={'Min. Anzahl Zeichen 3': lambda value: len(value)>2}
+                ).on('keydown.enter', send) \
+                .classes('flex-grow border-2 rounded-lg p-2 bg-white')
+            
+            ui.button(
+                'Senden',
+                on_click=send,
+                icon='send'
+            ).bind_enabled_from(text, 'error', lambda error: text.value and not error)
+            
     with ui.dialog() as mission_change_dialog, ui.card(align_items='center'):
         with ui.row().classes('w-full justify-center'):
             ui.label('Einsatzdetails bearbeiten').classes('w-full text-xl')
@@ -191,24 +246,7 @@ async def mission_detail_page(mission_id: int):
         with ui.column(align_items='center'):
             mission_details(mission_id)
             ui.button('Einsatz bearbeiten', on_click=open_change_dialog, icon='edit')
+            mission_units(mission_id, text)
         
         with ui.column().classes('w-full max-w-2xl mx-auto items-stretch'):
             mission_messages(mission_id)
-        
-    with ui.footer().classes('border-t-2 bg-white'), ui.row(align_items='center').classes('w-full justify-center mx-5'):
-            prio = ui.select(
-                [Priority.low, Priority.medium, Priority.high, Priority.top],
-                label='Priorität',
-                value=Priority.medium).classes('w-1/12')
-            
-            text = ui.input(
-                placeholder='Meldung',
-                validation={'Min. Anzahl Zeichen 3': lambda value: len(value)>2}
-                ).on('keydown.enter', send) \
-                .classes('flex-grow border-2 rounded-lg p-2 bg-white')
-            
-            ui.button(
-                'Senden',
-                on_click=send,
-                icon='send'
-            ).bind_enabled_from(text, 'error', lambda error: text.value and not error)

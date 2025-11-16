@@ -4,19 +4,8 @@ from TEL.model import UNIT_STATUS, Unit
 from TEL.database.unit import get_all_units, get_unit, quit_unit_status, update_unit
 from TEL.database.mission import get_mission_by_id, get_all_mission
 from TEL.page.dashboard import dashboard_page
-
-STATUS_COLOR = {
-    0: 'bg-red-500 text-white',
-    1: 'bg-green-500',
-    2: 'bg-gray-300',
-    3: 'bg-orange-500',
-    4: 'bg-yellow-500',
-    5: 'bg-cyan-500',
-    6: 'bg-gray-300 text-red',
-    7: 'bg-gray-300',
-    8: 'bg-gray-300',
-    9: 'bg-gray-300',
-}
+from TEL.page.mission_detail import mission_units
+from TEL.page.utils import STATUS_COLOR
 
 def unit_stuff(unit: Unit):
     
@@ -78,6 +67,7 @@ def unit_details(selected_unit: ui.label):
     async def reset_status():
         await quit_unit_status(selected_unit.text)
         unit_overview.refresh()
+        mission_units.refresh()
     
     unit_label = selected_unit.text
     unit = get_unit(unit_label)
