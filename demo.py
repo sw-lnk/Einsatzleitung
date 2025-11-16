@@ -120,6 +120,24 @@ def create_demo_messages(user: model.UserInfo):
                 )
         session.commit()
 
+def create_demo_units():
+    print('Create Demo Units...')
+    with get_session() as session:
+        session.add_all([
+            model.Unit(label='Fl.MUS.1.HLF20.1', status=0, status_prev=4),
+            model.Unit(label='Fl.MUS.1.LF20.1', status=5, status_prev=3),
+            model.Unit(label='Fl.MUS.1.DLK23.1', status=4),
+            model.Unit(label='Fl.MUS.1.ELW1.1', status=1),
+            model.Unit(label='Fl.MUS.1.MTF.1', status=6),
+            
+            model.Unit(label='Fl.MUS.2.HLF20.1', status=3),
+            model.Unit(label='Fl.MUS.2.LF20.1', status=2),
+            model.Unit(label='Fl.MUS.2.RW2.1', status=3),
+            model.Unit(label='Fl.MUS.2.ELW1.1', status=1),
+            model.Unit(label='Fl.MUS.2.MTF.1', status=2),
+        ])
+        session.commit()
+
 if __name__ in {"__main__", "__mp_main__"}:
     print('### Demo Data Creation ###')
     
@@ -127,5 +145,6 @@ if __name__ in {"__main__", "__mp_main__"}:
     admin = create_demo_user()
     create_demo_mission()
     create_demo_messages(admin)
+    create_demo_units()
     
     print('### Ready for Testing ###')

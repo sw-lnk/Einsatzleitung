@@ -2,19 +2,26 @@ import os
 from datetime import timedelta
 from nicegui import ui, app
 
-from TEL.authentication import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, hash_permission
+from TEL.authentication import authenticate_user, create_access_token, ACCESS_TOKEN_EXPIRE_MINUTES, hash_permission, Permission, ACCESS_TOKEN_UNIT_EXPIRE_DAYS
 
 async def login_page() -> None:
     async def login() -> None:
         user =  authenticate_user(username.value, password.value)
         if user:
             ui.notify('Login successfull', type='positive')
-            token = create_access_token(data={'sub': user.username}, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+            expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+            if user.permission == Permission.unit:
+                expires_delta=timedelta(minutes=ACCESS_TOKEN_UNIT_EXPIRE_DAYS)
+            token = create_access_token(data={'sub': user.username}, expires_delta=expires_delta)
             data = {
                 'token': token,
                 'permission': hash_permission(user.permission)
             }
             app.storage.user.update(data)
+            
+            if user.permission == Permission.unit:
+                ui.navigate.to(f'/unit/{user.username}')
+            
             ui.navigate.to('/')
         else:
             ui.notify('Benutzername und Passwort überprüfen.', type='warning')            

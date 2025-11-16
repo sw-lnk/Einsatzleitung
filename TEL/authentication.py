@@ -25,6 +25,7 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.getenv('SECRET_KEY')
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = int(os.getenv('ACCESS_TOKEN_EXPIRE_MINUTES', '15'))
+ACCESS_TOKEN_UNIT_EXPIRE_DAYS = int(os.getenv('ACCESS_TOKEN_UNIT_EXPIRE_DAYS', '7'))
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -117,12 +118,15 @@ def require_auth(permission: Permission | None = Permission.read):
             except HTTPException:
                 app.storage.user.clear()
                 raise unauthorized
-                        
+            
             if permission == Permission.read:
                 if user.permission not in [Permission.read, Permission.write, Permission.admin]:
                     raise missing_permission
             elif permission == Permission.write:
                 if user.permission not in [Permission.write, Permission.admin]:
+                    raise missing_permission
+            elif permission == Permission.unit:
+                if user.permission not in [Permission.unit, Permission.admin]:
                     raise missing_permission
             elif permission == Permission.admin:
                 if user.permission not in [Permission.admin]:

@@ -60,3 +60,14 @@ async def mission_detail_page(mission_id: int):
 async def mission_admin_page():
     with theme.frame('Einsatzübersicht'):
         mission_overview.mission_overview_page(False)
+
+@ui.page('/units')
+@require_auth(Permission.read)
+async def unit_page():
+    with theme.frame('Einsatzübersicht'):
+        await unit_overview.unit_page()
+
+@ui.page('/unit/{unit_label}')
+@require_auth(Permission.unit)
+async def unit_status_page(unit_label: str):
+    await unit_status.unit_status(unit_label)

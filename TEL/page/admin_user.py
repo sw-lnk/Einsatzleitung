@@ -175,7 +175,7 @@ def admin_user_page() -> None:
             input_email = ui.input('User eMail', validation=validate_email).classes('w-full')
             input_pwd1 = ui.input('Password', password=True, password_toggle_button=True, validation=validate_password).classes('w-full')
             input_pwd2 = ui.input('Password Validation', password=True, validation={'Passwörter stimmen nicht überein.': lambda value: value == input_pwd1.value}).classes('w-full')
-            input_permission = ui.select([None, Permission.read, Permission.write, Permission.admin], label='Permission').classes('w-full')
+            input_permission = ui.select([None, Permission.read, Permission.write, Permission.unit, Permission.admin], label='Permission').classes('w-full')
             input_button = ui.button('Anlegen', icon='save').classes('w-full')
             
             input_pwd1.on_value_change(input_pwd2.validate)

@@ -11,6 +11,7 @@ from sqlmodel import SQLModel, Field, Relationship
 class Permission(str, Enum):
     read = 'read'
     write = 'write'
+    unit = 'unit'
     admin = 'admin'
     
     
@@ -58,16 +59,16 @@ class Mission(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.now)
     
     messages: List["Message"] = Relationship(back_populates="mission")
+    units: List["Unit"] = Relationship(back_populates="mission")
     
-    def __str__(self):
-        if self.street_no:
-            return f"Einsatz {self.label} - {' '.join([self.street, self.street_no])}, {self.zip_code}"
-        return f"Einsatz {self.label} - {self.street, self.street_no}, {self.zip_code}"
+    def address(self) -> str:
+        return f"{' '.join([self.street, self.street_no])}, {self.zip_code}"
     
-    def __repr__(self):
-        if self.street_no:
-            return f"Einsatz {self.label} - {self.category.value} - {' '.join([self.street, self.street_no])}, {self.zip_code} [{self.status.value}]"
-        return f"Einsatz {self.label} - {self.category.value} - {self.street}, {self.zip_code} [{self.status.value}]"
+    def __str__(self) -> str:
+        return f"Einsatz - {self.address()} [{self.label}]"
+    
+    def __repr__(self) -> str:
+        return f"Einsatz - {self.address()} [{self.label}] >{self.status.value}<"
     
 
 # =============================================================================
@@ -94,3 +95,38 @@ class Message(SQLModel, table=True):
     mission: Mission = Relationship(back_populates="messages")
     
     created_at: datetime = Field(default_factory=datetime.now)
+    
+    
+# =============================================================================
+# UNIT MODEL
+# =============================================================================
+
+UNIT_STATUS = {
+    1: 'Einsatzbereit über Funk',
+    2: 'Einsatzbereit auf Wache',
+    3: 'Einsatz übernommen',
+    4: 'Einsatzstelle an',
+    5: 'Sprechwunsch',
+    6: 'Nicht einsatzbereit',
+    7: 'Patient aufgenommen',
+    8: 'Am Transportziel',
+    9: 'Notarzt aufgenommen',
+    0: 'Notruf',
+}
+    
+class Unit(SQLModel, table=True):
+    label: str = Field(primary_key=True)
+    status: int = 6
+    status_prev: int | None = None
+    comment: str | None = None
+    
+    vf: int = 0
+    zf: int = 0
+    gf: int = 0
+    ms: int = 0
+    agt: int = 0
+    
+    mission_id: int | None = Field(default=None, foreign_key="mission.id")
+    mission: Mission = Relationship(back_populates="units")
+    
+    update: datetime = Field(default_factory=datetime.now)
