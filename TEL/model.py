@@ -22,6 +22,9 @@ class UserInfo(SQLModel):
     email: str
     permission: Permission | None = None
     
+    def __str__(self):
+        return self.name
+    
 
 class User(UserInfo, table=True):    
     hashed_password: str    
@@ -54,6 +57,7 @@ class Mission(SQLModel, table=True):
     zip_code: Optional[str] = os.getenv('ZIP_CODE')
     category: Category
     status: Status = Status.new
+    comment: Optional[str] = None
         
     changed_at: datetime = Field(default_factory=datetime.now)
     created_at: datetime = Field(default_factory=datetime.now)
@@ -87,7 +91,6 @@ class Message(SQLModel, table=True):
     content: str
     prio: Priority = Priority.medium
     
-    user_name: Optional[str] = None
     user_id: Optional[int] = Field(default=None, foreign_key="user.id")
     user: User = Relationship(back_populates="messages")
     

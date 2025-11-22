@@ -45,7 +45,6 @@ async def mission_new_page():
         new_message = Message(
             content=f'Einsatzdetails aktualisiert: {mission.__repr__()}',
             prio=Priority.low,
-            user_name=user.name,
             user_id=user.id,
             mission_id=mission.id,
         )        

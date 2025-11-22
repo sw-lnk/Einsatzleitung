@@ -56,7 +56,8 @@ missions = [
         street_no='1',
         zip_code='12345',
         status=model.Status.new,
-        category=model.Category.th
+        category=model.Category.th,
+        comment='VU P klemmt'
     ),
     model.Mission(
         label='223456789',
@@ -64,7 +65,8 @@ missions = [
         street_no='7a',
         zip_code='12345',
         status=model.Status.in_progress,
-        category=model.Category.fire
+        category=model.Category.fire,
+        comment='Unklare Rauchentwicklung'
     ),
     model.Mission(
         label='323456789',
@@ -72,14 +74,16 @@ missions = [
         street_no='112',
         zip_code='12345',
         status=model.Status.closed,
-        category=model.Category.th
+        category=model.Category.th,
+        comment='Baum auf Straße'
     ),
     model.Mission(
         label='423456789',
         street='Muster Weg / Muster Straße',
         zip_code='12345',
         status=model.Status.archived,
-        category=model.Category.cbrn
+        category=model.Category.cbrn,
+        comment='Ölspur'
     ),
 ]
 
@@ -91,7 +95,7 @@ messages = [
     'Abschlussmeldung: Rücken ein.',
 ]
 
-def create_demo_mission() -> None:    
+def create_demo_mission(user: model.UserInfo) -> None:    
     print('Create Demo Missions...')
     with get_session() as session:
         for idx, m in enumerate(missions):
@@ -100,7 +104,7 @@ def create_demo_mission() -> None:
                 content='Mission created.',
                 prio=model.Priority.low,
                 mission_id=idx+1,
-                user_name='Automatisch generiert'
+                user_id=user.id
             ))
             session.commit()
             session.refresh(m)
@@ -113,7 +117,6 @@ def create_demo_messages(user: model.UserInfo):
                 session.add(
                     model.Message(
                         content=msg,
-                        user_name=user.name,
                         user_id=user.id,
                         mission_id=mis.id,
                     ),
@@ -124,16 +127,16 @@ def create_demo_units():
     print('Create Demo Units...')
     with get_session() as session:
         session.add_all([
-            model.Unit(label='Fl.MUS.1.HLF20.1', status=0, status_prev=4),
-            model.Unit(label='Fl.MUS.1.LF20.1', status=5, status_prev=3),
-            model.Unit(label='Fl.MUS.1.DLK23.1', status=4),
-            model.Unit(label='Fl.MUS.1.ELW1.1', status=1),
+            model.Unit(label='Fl.MUS.1.HLF20.1', status=0, status_prev=4, zf=1, gf=1, ms=6, agt=4, mission_id=2),
+            model.Unit(label='Fl.MUS.1.LF20.1', status=5, status_prev=3, gf=1, ms=6, agt=5, mission_id=2),
+            model.Unit(label='Fl.MUS.1.DLK23.1', status=4, vf=1, ms=2, agt=1, mission_id=2),
+            model.Unit(label='Fl.MUS.1.ELW1.1', status=1, vf=1, zf=1, ms=1, agt=1),
             model.Unit(label='Fl.MUS.1.MTF.1', status=6),
             
-            model.Unit(label='Fl.MUS.2.HLF20.1', status=3),
+            model.Unit(label='Fl.MUS.2.HLF20.1', status=3, gf=1, ms=8, agt=5, mission_id=3),
             model.Unit(label='Fl.MUS.2.LF20.1', status=2),
-            model.Unit(label='Fl.MUS.2.RW2.1', status=3),
-            model.Unit(label='Fl.MUS.2.ELW1.1', status=1),
+            model.Unit(label='Fl.MUS.2.RW2.1', status=3, zf=1, gf=1, ms=1, agt=1, mission_id=3),
+            model.Unit(label='Fl.MUS.2.ELW1.1', status=1, zf=1, gf=2, mission_id=3),
             model.Unit(label='Fl.MUS.2.MTF.1', status=2),
         ])
         session.commit()
@@ -143,7 +146,7 @@ if __name__ in {"__main__", "__mp_main__"}:
     
     create_db_and_tables()
     admin = create_demo_user()
-    create_demo_mission()
+    create_demo_mission(admin)
     create_demo_messages(admin)
     create_demo_units()
     

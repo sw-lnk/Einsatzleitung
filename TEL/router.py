@@ -3,7 +3,7 @@ from fastapi import APIRouter
 
 from TEL.page import admin_user, login, index, theme, profile
 from TEL.page import dashboard, mission_overview, mission_new, mission_detail
-from TEL.page import unit_overview, unit_status
+from TEL.page import unit_overview, unit_status, mission_detail_edit
 from TEL.page import exception  # noqa: F401 # Ignore to use exeption pages
 from TEL.authentication import require_auth
 from TEL.model import Permission
@@ -54,9 +54,15 @@ async def mission_new_page():
 @ui.page('/mission/{mission_id}')
 @require_auth(Permission.read)
 async def mission_detail_page(mission_id: int):
-    with theme.frame('Einsatzdetails'):
+    with theme.frame('Einsatztagebuch'):
         await mission_detail.mission_detail_page(int(mission_id))
 
+@ui.page('/mission/edit/{mission_id}')
+@require_auth(Permission.write)
+async def mission_edit_page(mission_id: int):
+    with theme.frame('Einsatzdetails'):
+        await mission_detail_edit.mission_edit_page(int(mission_id))
+        
 @ui.page('/admin/mission')
 @require_auth(Permission.admin)
 async def mission_admin_page():
