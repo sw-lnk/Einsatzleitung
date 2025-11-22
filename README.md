@@ -26,15 +26,15 @@ Anwendung starten:
 Weitere Infos zum Deployment siehe [NiceGUI](https://nicegui.io/documentation/section_configuration_deployment).
 
 
-## ToDo's
+## Funktionen
 - [X] User Interface
 - [X] Nutzer-Management
 - [X] Einsatztagebuch
-    - [X] Gesamteinsatz
-    - [ ] Einsatzabschnitte
+- [ ] Einsatztagebuch: PDF Export
 - [ ] Vierfachnachrichtenvordruck
-- [ ] Kräfteübersicht
+- [X] Kräfteübersicht
 - [X] Einsatzübersicht
+- [X] Statusmeldungen (SDS) je Einheit
 
 ## Referenz
 * [NiceGUI](https://nicegui.io/)

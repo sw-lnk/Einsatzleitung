@@ -1,14 +1,29 @@
-from nicegui import ui
+from nicegui import ui, app
 
-from TEL.model import UNIT_STATUS, Unit
+from TEL.model import UNIT_STATUS, Unit, Message, Priority, Status
 from TEL.database.unit import get_all_units, get_unit, quit_unit_status, update_unit
 from TEL.database.mission import get_mission_by_id, get_all_mission
+from TEL.database.message import create_message
+from TEL.authentication import get_current_user
 from TEL.page.dashboard import dashboard_page
-from TEL.page.mission_detail import mission_units
+from TEL.page.mission_detail import mission_units, mission_messages, messages
 from TEL.page.utils import STATUS_COLOR
 
-def unit_stuff(unit: Unit):
-    
+async def create_unit_message(content: str, mission_id: int) -> Message:
+    # TODO: unit durch mission_id ersetzen
+    user = await get_current_user(app.storage.user.get('token'))
+    message = Message(
+        prio=Priority.low,
+        content=content,
+        user_id=user.id,
+        mission_id=mission_id
+    )
+    await create_message(message)
+    messages.insert(0, message)
+    mission_messages.refresh()
+    return message
+
+def unit_stuff(unit: Unit):    
     async def update_unit_stuff():
         unit.vf = stuff_vf.value
         unit.zf = stuff_zf.value
@@ -31,14 +46,23 @@ def unit_stuff(unit: Unit):
             stuff_agt = ui.number('PA-Träger', min=0, step=1, value=unit.agt, on_change=update_unit_stuff).classes('w-24')
 
 async def set_mission(unit: Unit, mission_id: int):
+    message = await create_unit_message(f'{unit.label} Einsatz zugeordnet.', mission_id)
+    await create_message(message)
+    
     unit.mission_id = mission_id
-    await update_unit(unit)    
-    unit_details.refresh()
+    await update_unit(unit) 
+    unit_details.refresh()    
+    mission_units.refresh()
 
 async def reset_mission(unit: Unit):
+    message = await create_unit_message(f'{unit.label} vom Einsatz abgezogen.', unit.mission_id)
+    await create_message(message)
+    
     unit.mission_id = None
-    await update_unit(unit)    
-    unit_details.refresh()
+    await update_unit(unit) 
+    unit_details.refresh()    
+    mission_units.refresh()
+    
 
 @ui.refreshable
 async def unit_overview(selected_unit):
@@ -106,6 +130,8 @@ def unit_details(selected_unit: ui.label):
                 all_missions = get_all_mission()
                 with ui.row(align_items='center').classes('w-full justify-center'), ui.dropdown_button('Einsatzzuordnung', auto_close=True):
                     for mis in all_missions:
+                        if mis.status not in [Status.new, Status.in_progress]:
+                            continue
                         item_txt = str(mis)
                         ui.item(
                             item_txt,
