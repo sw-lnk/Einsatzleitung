@@ -1,7 +1,7 @@
 from nicegui import ui, app
 from fastapi import HTTPException, status
 
-from TEL.model import UNIT_STATUS, Permission, Mission, Unit, Message, Priority
+from TEL.model import UNIT_STATUS, Permission, Unit, Message, Priority
 from TEL.database.unit import get_unit, update_unit_status, update_unit
 from TEL.database.mission import get_mission_by_id
 from TEL.database.message import create_message

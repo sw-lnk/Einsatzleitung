@@ -35,7 +35,7 @@ def dashboard_page() -> None:
             stuff_card('Verbandsführer', total_stuff['vf'])
             stuff_card('Zugführer', total_stuff['zf'])
             stuff_card('Gruppenführer', total_stuff['gf'])
-            stuff_card('Mannschaftsgrad', total_stuff['ms'])
+            stuff_card('Mannschaft', total_stuff['ms'])
             stuff_card('Gesamt', total_stuff['total'], True)
             
         ui.separator()

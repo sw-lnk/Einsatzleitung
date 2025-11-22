@@ -10,7 +10,6 @@ from TEL.page.mission_detail import mission_units, mission_messages, messages
 from TEL.page.utils import STATUS_COLOR
 
 async def create_unit_message(content: str, mission_id: int) -> Message:
-    # TODO: unit durch mission_id ersetzen
     user = await get_current_user(app.storage.user.get('token'))
     message = Message(
         prio=Priority.low,

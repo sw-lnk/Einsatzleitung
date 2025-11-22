@@ -37,7 +37,8 @@ async def mission_new_page():
             street_no = input_street_no.value,
             zip_code=input_zip_code.value,
             category = input_mission_category.value,
-            status = Status.new
+            status = Status.new,
+            comment=input_comment.value,
         )  
         
         mission = await create_mission(mission)
@@ -60,12 +61,18 @@ async def mission_new_page():
     
     with ui.row().classes('w-full justify-center'), ui.card(align_items='center'):
         with ui.row().classes('w-full justify-center'):
-            ui.label('Neuen Einsatz erstellen').classes('w-full text-xl')
-        input_mission_label = ui.input('Einsatznummer', validation=validate_input).classes('w-full')
-        input_street = ui.input('Straße', validation=validate_input).classes('w-full')
-        input_street_no = ui.input('Hausnummer').classes('w-full')
-        input_zip_code = ui.input('Postleitzahl', value=PLZ).classes('w-full')
-        input_mission_category = ui.select([Category.fire, Category.th, Category.cbrn], label='Kategorie').classes('w-full')
+            ui.label('Einsatz anlegen').classes('text-xl')
+        
+        with ui.row().classes('w-full justify-between'):
+            input_mission_label = ui.input('Einsatznummer', validation=validate_input).classes('w-48')
+            input_mission_category = ui.select([Category.fire, Category.th, Category.cbrn], label='Kategorie').classes('w-48')
+        
+        with ui.row().classes('w-full justify-between'):
+            input_street = ui.input('Straße', validation=validate_input).classes('w-48')
+            input_street_no = ui.input('Hausnummer').classes('w-24')
+            input_zip_code = ui.input('Postleitzahl', value=PLZ).classes('w-24')
+        
+        input_comment = ui.textarea(label='Bemerkung').classes('w-full')
         
         with ui.row().classes('w-full justify-center'):
             ui.button('Speichern', on_click=safe_mission, icon='save')

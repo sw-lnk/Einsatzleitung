@@ -68,18 +68,15 @@ def mission_details(mission_id: int):
             elif mission.category == Category.cbrn:
                 ui.icon('o_flare', size='md')
             ui.label(mission.category)
-        
-        # with ui.row(align_items='center'):
             ui.icon('o_tag', size='md')
             ui.label(mission.label)
-        
-        # with ui.row(align_items='center'):
             ui.icon('o_label', size='md')
             ui.label(mission.status)
         
-        with ui.row(align_items='center').classes('w-96'):
-            ui.icon('o_info', size='md')
-            ui.label(text = mission.comment)
+        if mission.comment:
+            with ui.row(align_items='center').classes('w-96'):
+                ui.icon('o_info', size='md')
+                ui.label(text = mission.comment)
             
             
 def message_element(message: Message) -> None:
