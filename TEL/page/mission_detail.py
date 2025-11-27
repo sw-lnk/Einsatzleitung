@@ -4,58 +4,12 @@ from fastapi.exceptions import HTTPException
 
 from TEL.model import Message, Category, Status, Priority
 from TEL.database.message import get_all_messages, create_message
-from TEL.database.mission import get_mission_by_id, get_mission_units
-from TEL.database.unit import quit_unit_status
+from TEL.database.mission import get_mission_by_id
 from TEL.database.user import get_user_by_id
 from TEL.authentication import get_current_user
-from TEL.page.utils import STATUS_COLOR
+from TEL.page.unit_status_utils import mission_units
 
 messages: list[Message] = get_all_messages()
-
-async def reset_status(unit_label: str):
-    await quit_unit_status(unit_label)
-    mission_units.refresh()
-    # TODO: Update Liste mit Statusmeldungen in unit_overview -> Zirkelbeziehung umgehen
-
-@ui.refreshable
-def mission_units(mission_id: int, input_ui: ui.input):
-    units = get_mission_units(mission_id)
-    unit_strength = {
-        'vf': sum([unit.vf for unit in units]),
-        'zf': sum([unit.zf for unit in units]),
-        'gf': sum([unit.gf for unit in units]),
-        'ms': sum([unit.ms for unit in units]),
-        'agt': sum([unit.agt for unit in units]),
-    }
-    unit_strength['total'] = sum([unit_strength.get('vf'), unit_strength.get('zf'), unit_strength.get('gf'), unit_strength.get('ms')])
-    if units is None:
-        ui.label('Keine Einheit zugeordnet.')
-        return
-    with ui.card(align_items='center').classes('w-full'):
-        with ui.row(align_items='center').classes('w-full justify-center'):
-            ui.label(unit_strength.get('vf'))
-            ui.label('/')
-            ui.label(unit_strength.get('zf'))
-            ui.label('/')
-            ui.label(unit_strength.get('gf'))
-            ui.label('/')
-            ui.label(unit_strength.get('ms'))
-            ui.label('/')
-            ui.label(unit_strength.get('total')).classes('underline')
-            ui.label(f'[ {unit_strength.get('ms')} ]')
-            
-        for status in [0, 5, 3, 4, 1, 2, 7, 8, 9, 6]:
-            for unit in units:
-                if unit.status == status:
-                    with ui.row(align_items='center').classes('w-full'):
-                        ui.label(unit.status).classes(f'text-lg {STATUS_COLOR[unit.status]} rounded-lg py-1 px-3')
-                        ui.button(text=unit.label).classes('w-48').props('align=left').on_click(
-                            lambda label=unit.label: input_ui.set_value(f'{label}: ')
-                        )
-                        if unit.status in [0, 5]:
-                            ui.button(icon='o_check_box').on_click(
-                                lambda label=unit.label: reset_status(label)
-                            )
 
 @ui.refreshable
 def mission_details(mission_id: int):
