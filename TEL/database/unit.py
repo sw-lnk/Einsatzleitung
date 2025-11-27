@@ -1,5 +1,6 @@
 from sqlmodel import select
 import uuid
+import datetime as dt
 
 from TEL.database import database
 from TEL.model import Unit, User, Permission
@@ -31,6 +32,7 @@ async def update_unit_status(unit_label: str, status: int) -> Unit | None:
             return None
         if (status != 0) and (status != 5):
             unit.status_prev = unit.status
+        unit.update = dt.datetime.now()
         unit.status = status
         session.add(unit)
         session.commit()
@@ -39,6 +41,7 @@ async def update_unit_status(unit_label: str, status: int) -> Unit | None:
 
 async def update_unit(unit: Unit) -> Unit | None:
     with database.get_session() as session:
+        unit.update = dt.datetime.now()
         session.add(unit)
         session.commit()
         session.refresh(unit)
@@ -49,6 +52,7 @@ async def quit_unit_status(unit_label: str) -> Unit | None:
         unit = session.exec(select(Unit).where(Unit.label == unit_label)).first()
         if not unit:
             return None
+        unit.update = dt.datetime.now()
         unit.status = unit.status_prev
         session.add(unit)
         session.commit()

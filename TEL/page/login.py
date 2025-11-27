@@ -21,6 +21,7 @@ async def login_page() -> None:
             
             if user.permission == Permission.unit:
                 ui.navigate.to(f'/unit/{user.username}')
+                return
             
             ui.navigate.to('/')
         else:

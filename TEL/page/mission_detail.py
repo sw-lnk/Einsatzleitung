@@ -5,11 +5,17 @@ from fastapi.exceptions import HTTPException
 from TEL.model import Message, Category, Status, Priority
 from TEL.database.message import get_all_messages, create_message
 from TEL.database.mission import get_mission_by_id, get_mission_units
+from TEL.database.unit import quit_unit_status
 from TEL.database.user import get_user_by_id
 from TEL.authentication import get_current_user
 from TEL.page.utils import STATUS_COLOR
 
 messages: list[Message] = get_all_messages()
+
+async def reset_status(unit_label: str):
+    await quit_unit_status(unit_label)
+    mission_units.refresh()
+    # TODO: Update Liste mit Statusmeldungen in unit_overview -> Zirkelbeziehung umgehen
 
 @ui.refreshable
 def mission_units(mission_id: int, input_ui: ui.input):
@@ -46,6 +52,10 @@ def mission_units(mission_id: int, input_ui: ui.input):
                         ui.button(text=unit.label).classes('w-48').props('align=left').on_click(
                             lambda label=unit.label: input_ui.set_value(f'{label}: ')
                         )
+                        if unit.status in [0, 5]:
+                            ui.button(icon='o_check_box').on_click(
+                                lambda label=unit.label: reset_status(label)
+                            )
 
 @ui.refreshable
 def mission_details(mission_id: int):

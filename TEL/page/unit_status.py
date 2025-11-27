@@ -42,21 +42,27 @@ async def unit_status(unit_label: str):
     
     async def send_status(status_id: int):
         unit.status = status_id        
-        unit_overview.unit_overview.refresh()
-        await update_unit_status(unit.label, status_id)    
-        mission_units.refresh()
         
-        # Wenn Status 1 o. 2 (weitere?) gesetzt wird, dann vom Einsatz lösen
         if status_id in [1, 2]:
-            await create_unit_message(f'{unit.label} mit Status {status_id} aus Einsatz entlassen.', unit.mission_id)
-            
+            if unit.mission_id:
+                await create_unit_message(f'{unit.label} mit Status {status_id} aus Einsatz entlassen.', unit.mission_id)
             unit.mission_id = None
-            await update_unit(unit)
-            unit_details.refresh()    
-            mission_units.refresh()
-        
-        status_tableau.refresh()
+        elif status_id == 3 and unit.mission_id:
+            await create_unit_message(f'{unit.label} Einsatz übernommen (Status 3).', unit.mission_id)
+        elif status_id == 4 and unit.mission_id:
+            await create_unit_message(f'{unit.label} Einsatzstelle an (Status 4).', unit.mission_id)
+        elif status_id == 7 and unit.mission_id:
+            await create_unit_message(f'{unit.label} Patient aufgenommen: Status 7.', unit.mission_id)
+        elif status_id == 8 and unit.mission_id:
+            await create_unit_message(f'{unit.label} am Transportziel: Status 8.', unit.mission_id)
+        elif status_id == 9 and unit.mission_id:
+            await create_unit_message(f'{unit.label} Notarzt aufgenommen: Status 9.', unit.mission_id)
             
+        await update_unit(unit)
+        unit_details.refresh()
+        unit_overview.unit_overview.refresh()
+        mission_units.refresh()
+        status_tableau.refresh()
     
     unit = get_unit(unit_label)
     if not unit:
