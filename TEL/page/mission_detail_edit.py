@@ -6,7 +6,8 @@ from TEL.database.mission import get_mission_by_id, get_mission_by_label, update
 from TEL.database.message import create_message
 
 from TEL.page.dashboard import dashboard_page
-from TEL.page.mission_detail import messages, mission_messages, mission_details
+from TEL.page.mission_detail import mission_details
+from TEL.page.utils import mission_messages
 
 def validate_input(value: str):
     if len(value) == 0:
@@ -45,12 +46,11 @@ async def mission_edit_page(mission_id: int):
             prio=Priority.low,
             user_id=user.id,
             mission_id=mission.id,
-        )
-        messages.insert(0, new_message)
-        mission_messages.refresh()
+        )        
         
         await update_mission_data(mission)
         await create_message(new_message)
+        mission_messages.refresh()
         
         ui.notify('Speichern erfolgreich', type='positive')
         mission_details.refresh()

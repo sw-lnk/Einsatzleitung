@@ -95,5 +95,4 @@ def mission_overview_page(archived: bool = True) -> None:
                 archiv_mission_button.bind_enabled_from(mission_table, 'selected', lambda selected: len(selected)>0)
                 
     hide_elements()
-
         

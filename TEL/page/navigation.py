@@ -12,6 +12,6 @@ def navigation() -> None:
     # link('Admin - Einsatz', '/admin/mission')
     link('Dashboard', '/dashboard')
     link('Einsätze', '/mission')
-    link('Einheiten', '/units')
+    link('Einheiten', '/unit')
     link('Profil', '/profil')
     

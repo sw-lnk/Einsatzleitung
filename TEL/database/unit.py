@@ -30,7 +30,7 @@ async def update_unit_status(unit_label: str, status: int) -> Unit | None:
         unit = session.exec(select(Unit).where(Unit.label == unit_label)).first()
         if not unit:
             return None
-        if (status != 0) and (status != 5):
+        if unit.status not in [0, 5]:
             unit.status_prev = unit.status
         unit.update = dt.datetime.now()
         unit.status = status
@@ -53,7 +53,11 @@ async def quit_unit_status(unit_label: str) -> Unit | None:
         if not unit:
             return None
         unit.update = dt.datetime.now()
-        unit.status = unit.status_prev
+        print(unit)
+        if unit.status_prev:
+            unit.status = unit.status_prev
+        else:
+            return unit
         session.add(unit)
         session.commit()
         session.refresh(unit)

@@ -1,3 +1,4 @@
+import os
 import datetime as dt
 from nicegui import ui    
 
@@ -46,4 +47,5 @@ def dashboard_page() -> None:
         ui.label(time_str).classes('text-xl bolt')
         ui.label(time_str_t)
 
-ui.timer(20, dashboard_page.refresh)
+if int(os.getenv('RELOAD_DASHBOARD_AUTOMATICALLY', 0)):
+    ui.timer(20, dashboard_page.refresh)

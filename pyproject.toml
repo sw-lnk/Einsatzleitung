@@ -1,7 +1,7 @@
 [project]
 name = "einsatzleitung"
-version = "0.2.6"
-description = "Add your description here"
+version = "0.3.0"
+description = "Digitale Unterstützung in der Technische Einsatzleitung (TEL)."
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [

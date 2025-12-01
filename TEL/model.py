@@ -63,7 +63,8 @@ class Mission(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.now)
     
     messages: List["Message"] = Relationship(back_populates="mission")
-    units: List["Unit"] = Relationship(back_populates="mission")
+    units: List["Unit"] = Relationship(back_populates="mission")    
+    status_list: List["UnitStatus"] = Relationship(back_populates="mission")
     
     def address(self) -> str:
         return f"{' '.join([self.street, self.street_no])}, {self.zip_code}"
@@ -132,4 +133,19 @@ class Unit(SQLModel, table=True):
     mission_id: int | None = Field(default=None, foreign_key="mission.id")
     mission: Mission = Relationship(back_populates="units")
     
+    status_list: List["UnitStatus"] = Relationship(back_populates="unit")
+    
     update: datetime = Field(default_factory=datetime.now)
+    
+
+class UnitStatus(SQLModel, table=True):
+    id: int = Field(default=None, primary_key=True)
+    status_number: int = Field(ge=0, le=9, const=True)
+    
+    unit_label: str = Field(foreign_key="unit.label", const=True)
+    unit: Unit = Relationship(back_populates="status_list")
+    
+    mission_id: int | None = Field(default=None, foreign_key="mission.id", const=True)
+    mission: Mission = Relationship(back_populates="status_list")
+    
+    timestamp: datetime = Field(default_factory=datetime.now, const=True)

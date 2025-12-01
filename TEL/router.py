@@ -69,7 +69,7 @@ async def mission_admin_page():
     with theme.frame('Einsatzübersicht'):
         mission_overview.mission_overview_page(False)
 
-@ui.page('/units')
+@ui.page('/unit')
 @require_auth(Permission.read)
 async def unit_page():
     with theme.frame('Einsatzübersicht'):

@@ -1,6 +1,6 @@
 from nicegui import ui
 
-from TEL.page.unit_status_utils import unit_details, unit_overview
+from TEL.page.utils import unit_details, unit_overview
 
 async def unit_page() -> None:                    
         

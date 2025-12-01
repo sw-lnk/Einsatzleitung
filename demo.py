@@ -49,8 +49,17 @@ def create_demo_user() -> model.UserInfo:
     
     return model.UserInfo.model_validate(admin)
 
+messages = [
+    'Erste Rückmeldung von der Est: Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum',
+    'Folgemeldung: Lage unter Kontrolle, Einsatzdauer unbekannt.',
+    'Folgemeldung: Maßnahmen werden zurückgenommen, Einsatzstelle an Eigentümer übergeben.',
+    'Abschlussmeldung: Rücken ein.',
+]
+
 missions = [
-    model.Mission(
+    {'id': 1,
+     'mission': model.Mission(
+        id=1,
         label='123456789',
         street='Muster Straße',
         street_no='1',
@@ -59,7 +68,11 @@ missions = [
         category=model.Category.th,
         comment='VU P klemmt'
     ),
-    model.Mission(
+    'messages': []
+    },
+    {'id': 2,
+     'mission': model.Mission(
+        id=2,
         label='223456789',
         street='Weg des Musters',
         street_no='7a',
@@ -68,7 +81,15 @@ missions = [
         category=model.Category.fire,
         comment='Unklare Rauchentwicklung'
     ),
-    model.Mission(
+    'messages': [
+        'Fl.MUS.1.HLF20.1 dem Einsatz zugeordnet.',
+        'Fl.MUS.1.LF20.1 dem Einsatz zugeordnet.',
+        'Fl.MUS.1.DLK23.1 dem Einsatz zugeordnet.',
+        ]
+    },
+    {'id': 3,
+     'mission': model.Mission(
+        id=3,
         label='323456789',
         street='Großestraße',
         street_no='112',
@@ -77,7 +98,14 @@ missions = [
         category=model.Category.th,
         comment='Baum auf Straße'
     ),
-    model.Mission(
+    'messages': [
+        'Fl.MUS.2.HLF20.1 dem Einsatz zugeordnet.',
+        'Fl.MUS.2.RW2.1 dem Einsatz zugeordnet.',
+        'Fl.MUS.2.ELW1.1 dem Einsatz zugeordnet.',] + messages
+    },
+    {'id': 4,
+     'mission': model.Mission(
+        id=4,
         label='423456789',
         street='Muster Weg / Muster Straße',
         zip_code='12345',
@@ -85,29 +113,31 @@ missions = [
         category=model.Category.cbrn,
         comment='Ölspur'
     ),
-]
-
-messages = [
-    'Einheit Musterhaus dem Einsatz zugeordnet.',
-    'Erste Rückmeldung von der Est: Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum Loremipsum',
-    'Folgemeldung: Lage unter Kontrolle, Einsatzdauer unbekannt.',
-    'Folgemeldung: Maßnahmen werden zurückgenommen, Einsatzstelle an Eigentümer übergeben.',
-    'Abschlussmeldung: Rücken ein.',
+    'messages': []
+    },
 ]
 
 def create_demo_mission(user: model.UserInfo) -> None:    
     print('Create Demo Missions...')
     with get_session() as session:
-        for idx, m in enumerate(missions):
-            session.add(m)
-            session.add(model.Message(
-                content='Mission created.',
+        for m in missions:
+            mission = m['mission']
+            first_msg = model.Message(
+                content='Einsatz erstellt.',
                 prio=model.Priority.low,
-                mission_id=idx+1,
+                mission_id=m['id'],
                 user_id=user.id
+            )
+            session.add_all([mission, first_msg])
+            for msg in m['messages']:
+                session.add(
+                    model.Message(
+                        content=msg,
+                        prio=model.Priority.low,
+                        mission_id=m['id'],
+                        user_id=user.id
             ))
             session.commit()
-            session.refresh(m)
 
 def create_demo_messages(user: model.UserInfo):
     print('Create Demo Messages...')
@@ -147,7 +177,7 @@ if __name__ in {"__main__", "__mp_main__"}:
     create_db_and_tables()
     admin = create_demo_user()
     create_demo_mission(admin)
-    create_demo_messages(admin)
+    # create_demo_messages(admin)
     create_demo_units()
     
     print('### Ready for Testing ###')
